@@ -7,26 +7,26 @@
   <script>
 
   var e1 = L('(λx.x) a');
-  var se1 = e1.simplify();
+  var se1 = e1.solve();
   console.log('(λx.x) a => '+ se1.str());
 
   var e2 = L('(λxy.x) a b');
-  var se2 = e2.simplify();
+  var se2 = e2.solve();
   console.log('(λxy.x) a b => '+ se2.str());
 
   var e3 = L('(λxy.y) a b');
-  var se3 = e3.simplify();
+  var se3 = e3.solve();
   console.log('(λxy.y) a b => '+ se3.str());
 
   var e4 = L('(λcab.c a b) (λxy.x) a b');
-  var se4 = e4.simplify();
+  var se4 = e4.solve();
   console.log('(λcab.c a b) (λxy.x) a b => '+ se4.str());
 
   var e5 = L('COND TRUE a b',{
     'COND':'(λcab.c a b)',
     'TRUE':'(λxy.x)'
   });
-  var se5 = e5.simplify();
+  var se5 = e5.solve();
   console.log('COND TRUE a b => '+ se5.str());
 
   </script>

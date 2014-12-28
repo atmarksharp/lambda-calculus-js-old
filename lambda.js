@@ -341,7 +341,7 @@ function yyparse()
   // Variant (ex: a,b,c ...)
   function Var(name){ 
     this.name = name; // String
-    this.simplify = function(){
+    this.solve = function(){
       return G.lambdaSimplify(this);
     }
     this.str = function(){
@@ -373,7 +373,7 @@ function yyparse()
     this.real_str = function(){
       return '(λ'+this.arg+'.'+this.expr.real_str()+')';
     }
-    this.simplify = function(){
+    this.solve = function(){
       return G.lambdaSimplify(this);
     }
     this.removeGensym = function(){
@@ -394,7 +394,7 @@ function yyparse()
   function App(expr1, expr2){
     this.expr1 = expr1;
     this.expr2 = expr2;
-    this.simplify = function(){
+    this.solve = function(){
       return G.lambdaSimplify(this);
     }
     this.str = function(){
