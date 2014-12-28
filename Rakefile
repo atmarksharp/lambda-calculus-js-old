@@ -1,5 +1,5 @@
 task :default => [:compile]
 
 task :compile do
-  kmyacc src
+  sh("kmyacc src/lambda.jsy; mv src/lambda.js .");
 end 

@@ -1,4 +1,4 @@
-%{
+
 
 var G;
 
@@ -18,34 +18,304 @@ if(typeof window == 'undefined'){
   // -----------------------------------
   // ===================================
 
-%}
 
-%left ' '
-%token ID IDENTIFIER
-%token LID IDENTIFIER
-%token PARAMETERS IDENTIFIER
+/* Prototype file of JavaScript parser.
+ * Written by MORI Koichiro
+ * This file is PUBLIC DOMAIN.
+ */
 
-%%
+var buffer;
+var token;
+var toktype;
 
-start: line;
+var YYERRTOK = 256;
+var ID = 257;
+var IDENTIFIER = 258;
+var LID = 259;
+var PARAMETERS = 260;
 
-line
-  : expr { returnValue = $1; /* expr */ }
-  ;
+  
+/*
+  #define yyclearin (yychar = -1)
+  #define yyerrok (yyerrflag = 0)
+  #define YYRECOVERING (yyerrflag != 0)
+  #define YYERROR  goto yyerrlab
+*/
 
-expr
-  : '(' expr ')' { $$ = $2; /* '(' expr ')' */ }
-  | '#' parameters '.' expr { $$ = lambdaGenerator($2,$4); /* '#' parameters '.' expr */ }
-  | expr ' ' expr { $$ = new App($1,$3); /* expr ' ' expr */ }
-  | ID { $$ = new Var($1); /* ID */ }
-  ;
 
-parameters
-  : ID parameters { $$ = ($1 + $2); /* ID parameter */ }
-  | ID { $$ = $1; /* ID */ }
-  ;
+/** Debug mode flag **/
+var yydebug = false;
 
-%%
+/** lexical element object **/
+var yylval = null;
+
+/** Dialog window **/
+var yywin = null;
+var yydoc = null;
+
+function yydocopen() {
+  if (yywin == null) {
+    yywin = window.open("", "yaccdiag", "resizable,status,width=600,height=400");
+    yydoc = null;
+  }
+  if (yydoc == null)
+    yydoc = yywin.document;
+  yydoc.open();
+}
+
+function yyprintln(msg)
+{
+  if (yydoc == null)
+    yydocopen();
+  yydoc.write(msg + "<br>");
+}
+
+function yyflush()
+{
+  if (yydoc != null) {
+    yydoc.close();
+    yydoc = null;
+    yywin = null;
+  }
+}
+
+
+
+var yytranslate = [
+      0,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    2,    8,    8,    6,    8,    8,    8,    8,
+      4,    5,    8,    8,    8,    8,    7,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+      8,    8,    8,    8,    8,    8,    1,    3,    8,    8,
+      8
+  ];
+
+var YYBADCH = 8;
+var YYMAXLEX = 261;
+var YYTERMS = 8;
+var YYNONTERMS = 5;
+
+var yyaction = [
+     17,    1,    0,    5,    6,    2,    3,    0,    0,   14
+  ];
+
+var YYLAST = 10;
+
+var yycheck = [
+      3,    4,    0,    6,    3,    2,    7,   -1,   -1,    5
+  ];
+
+var yybase = [
+     -3,   -3,   -3,   -3,    4,    1,    1,    2,    3,   -1,
+      3,    0,    0,    0,    0,    3
+  ];
+
+var YY2TBLSTATE = 5;
+
+var yydefault = [
+  32767,32767,32767,32767,32767,32767,    8,32767,    2,32767,
+      4
+  ];
+
+
+
+var yygoto = [
+      4,   16,   10,   18
+  ];
+
+var YYGLAST = 4;
+
+var yygcheck = [
+      3,    3,    3,    4
+  ];
+
+var yygbase = [
+      0,    0,    0,   -1,   -3
+  ];
+
+var yygdefault = [
+  -32768,    7,   12,    8,    9
+  ];
+
+var yylhs = [
+      0,    1,    2,    3,    3,    3,    3,    4,    4
+  ];
+
+var yylen = [
+      1,    1,    1,    3,    4,    3,    1,    2,    1
+  ];
+
+var YYSTATES = 16;
+var YYNLSTATES = 11;
+var YYINTERRTOK = 1;
+var YYUNEXPECTED = 32767;
+var YYDEFAULT = -32766;
+
+/*
+ * Parser entry point
+ */
+
+function yyparse()
+{
+  var yyastk = new Array();
+  var yysstk = new Array();
+
+  yystate = 0;
+  yychar = -1;
+
+  yysp = 0;
+  yysstk[yysp] = 0;
+  yyerrflag = 0;
+  for (;;) {
+    if (yybase[yystate] == 0)
+      yyn = yydefault[yystate];
+    else {
+      if (yychar < 0) {
+        if ((yychar = yylex()) <= 0) yychar = 0;
+        yychar = yychar < YYMAXLEX ? yytranslate[yychar] : YYBADCH;
+      }
+
+      if (((yyn = yybase[yystate] + yychar) >= 0
+	    && yyn < YYLAST && yycheck[yyn] == yychar
+           || (yystate < YY2TBLSTATE
+               && (yyn = yybase[yystate + YYNLSTATES] + yychar) >= 0
+               && yyn < YYLAST && yycheck[yyn] == yychar))
+	  && (yyn = yyaction[yyn]) != YYDEFAULT) {
+        /*
+         * >= YYNLSTATE: shift and reduce
+         * > 0: shift
+         * = 0: accept
+         * < 0: reduce
+         * = -YYUNEXPECTED: error
+         */
+        if (yyn > 0) {
+          /* shift */
+          yysp++;
+
+          yysstk[yysp] = yystate = yyn;
+          yyastk[yysp] = yylval;
+          yychar = -1;
+          
+          if (yyerrflag > 0)
+            yyerrflag--;
+          if (yyn < YYNLSTATES)
+            continue;
+            
+          /* yyn >= YYNLSTATES means shift-and-reduce */
+          yyn -= YYNLSTATES;
+        } else
+          yyn = -yyn;
+      } else
+        yyn = yydefault[yystate];
+    }
+      
+    for (;;) {
+      /* reduce/error */
+      if (yyn == 0) {
+        /* accept */
+        yyflush();
+        return 0;
+      }
+      else if (yyn != YYUNEXPECTED) {
+        /* reduce */
+        yyl = yylen[yyn];
+        yyval = yyastk[yysp-yyl+1];
+        /* Following line will be replaced by reduce actions */
+        switch(yyn) {
+        case 2:
+{ returnValue = yyastk[yysp-(1-1)]; /* expr */ } break;
+        case 3:
+{ yyval = yyastk[yysp-(3-2)]; /* '(' expr ')' */ } break;
+        case 4:
+{ yyval = lambdaGenerator(yyastk[yysp-(4-2)],yyastk[yysp-(4-4)]); /* '#' parameters '.' expr */ } break;
+        case 5:
+{ yyval = new App(yyastk[yysp-(3-1)],yyastk[yysp-(3-3)]); /* expr ' ' expr */ } break;
+        case 6:
+{ yyval = new Var(yyastk[yysp-(1-1)]); /* ID */ } break;
+        case 7:
+{ yyval = (yyastk[yysp-(2-1)] + yyastk[yysp-(2-2)]); /* ID parameter */ } break;
+        case 8:
+{ yyval = yyastk[yysp-(1-1)]; /* ID */ } break;
+        }
+        /* Goto - shift nonterminal */
+        yysp -= yyl;
+        yyn = yylhs[yyn];
+        if ((yyp = yygbase[yyn] + yysstk[yysp]) >= 0 && yyp < YYGLAST
+            && yygcheck[yyp] == yyn)
+          yystate = yygoto[yyp];
+        else
+          yystate = yygdefault[yyn];
+          
+        yysp++;
+
+        yysstk[yysp] = yystate;
+        yyastk[yysp] = yyval;
+      }
+      else {
+        /* error */
+        switch (yyerrflag) {
+        case 0:
+          yyerror("syntax error");
+        case 1:
+        case 2:
+          yyerrflag = 3;
+          /* Pop until error-expecting state uncovered */
+
+          while (!((yyn = yybase[yystate] + YYINTERRTOK) >= 0
+                   && yyn < YYLAST && yycheck[yyn] == YYINTERRTOK
+                   || (yystate < YY2TBLSTATE
+                       && (yyn = yybase[yystate + YYNLSTATES] + YYINTERRTOK) >= 0
+                       && yyn < YYLAST && yycheck[yyn] == YYINTERRTOK))) {
+            if (yysp <= 0) {
+              yyflush();
+              return 1;
+            }
+            yystate = yysstk[--yysp];
+          }
+          yyn = yyaction[yyn];
+          yysstk[++yysp] = yystate = yyn;
+          break;
+
+        case 3:
+          if (yychar == 0) {
+            yyflush();
+            return 1;
+          }
+          yychar = -1;
+          break;
+        }
+      }
+        
+      if (yystate < YYNLSTATES)
+        break;
+      /* >= YYNLSTATES means shift-and-reduce */
+      yyn = yystate - YYNLSTATES;
+    }
+  }
+}
+
+
 
   // ===================================
   // -----------------------------------
