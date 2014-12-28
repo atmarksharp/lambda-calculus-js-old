@@ -17,7 +17,7 @@ console.log(e.solve().str()); // a
 e = lambda('(λx.x) a');
 console.log(e.solve().str()); // a
 
-e = L('(#x.x) a'); // # means the lambda sign
+e = L('(#x.x) a'); // '#' means the lambda sign
 console.log(e.solve().str()); // a
 ```
 
