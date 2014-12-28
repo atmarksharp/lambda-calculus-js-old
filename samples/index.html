@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Samples of lambda.js</title>
+
+  <style>
+  html,body {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  #result > li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+
+  pre#source {
+    border: 1px solid black;
+    padding: 3px;
+  }
+  </style>
+
+  <script src="js/jquery-1.11.2.min.js"></script>
+  <script src="js/sprintf.min.js"></script>
+  <script src="../lambda.js"></script>
+  <script>
+  jQuery(function(){
+
+    function print(s){
+      var s = s.split("=>").join("<b>&nbsp;=>&nbsp;</b>");
+      $('#result').append('<li>'+s+'</li>');
+    }
+
+    var e1 = L('(λx.x) a');
+    var se1 = e1.solve();
+    print('(λx.x) a => '+ se1.str());
+
+    var e2 = L('(λxy.x) a b');
+    var se2 = e2.solve();
+    print('(λxy.x) a b => '+ se2.str());
+
+    var e3 = L('(λxy.y) a b');
+    var se3 = e3.solve();
+    print('(λxy.y) a b => '+ se3.str());
+
+    var e4 = L('(λcab.c a b) (λxy.x) a b');
+    var se4 = e4.solve();
+    print('(λcab.c a b) (λxy.x) a b => '+ se4.str());
+
+    var e5 = L('COND TRUE a b',{
+      'COND':'(λcab.c a b)',
+      'TRUE':'(λxy.x)'
+    });
+    var se5 = e5.solve();
+    print('COND TRUE a b => '+ se5.str());
+
+    var e6 = L('COND FALSE a b',{
+      'COND':'(λcab.c a b)',
+      'FALSE':'(λxy.y)'
+    });
+    var se6 = e6.solve();
+    print('COND FALSE a b => '+ se6.str());
+
+    var e7 = L('INCL 0',{
+      'INCL':'(λnfx.f (n f x))',
+      '0':'(λfx.x)',
+      '1':'(λfx.f x)'
+    });
+    var se7 = e7.solve();
+    print( sprintf('INCL 0 => %s => %s', se7.real_str(), se7.str()) );
+
+    var e8 = L('INCL 1',{
+      'INCL':'(λnfx.f (n f x))',
+      '1':'(λfx.f x)',
+      '2':'(λfx.f (f x))'
+    });
+    var se8 = e8.solve();
+    print( sprintf('INCL 1 => %s => %s', se8.real_str(), se8.str()) );
+
+    var e9 = L('ADD 1 1',{
+      'ADD':'(λmnfx.m f (n f x))',
+      '1':'(λfx.f x)',
+      '2':'(λfx.f (f x))'
+    });
+    var se9 = e9.solve();
+    print( sprintf('ADD 1 1 => %s => %s', se9.real_str(), se9.str()) );
+
+    var e10 = L('ADD 2 3',{
+      'ADD':'(λmnfx.m f (n f x))',
+      '2':'(λfx.f (f x))',
+      '3':'(λfx.f (f (f x)))',
+      '5':'(λfx.f (f (f (f (f x)))))'
+    });
+    var se10 = e10.solve();
+    print( sprintf('ADD 2 3 => %s => %s', se10.real_str(), se10.str()) );
+
+  });
+
+  </script>
+</head>
+<body>
+  <h2>Samples of lambda.js</h2>
+  <p><b>(lambda expr) => (solution)</b></p>
+  <div id="main">
+    <ul id="result">
+      
+    </ul>
+  </div>
+
+  <div>
+    <h3>Source ( pure javascript version )</h3>
+    <pre id="source">
+    &lt;html>
+    &lt;head>
+    &lt;script src="path/to/lambda.js">&lt;/script>
+    &lt;script>
+    function print(s){
+      document.write(s+"&lt;br>");
+    }
+
+    var e1 = L('(λx.x) a');
+    var se1 = e1.solve();
+    print('(λx.x) a => '+ se1.str());
+
+    var e2 = L('(λxy.x) a b');
+    var se2 = e2.solve();
+    print('(λxy.x) a b => '+ se2.str());
+
+    var e3 = L('(λxy.y) a b');
+    var se3 = e3.solve();
+    print('(λxy.y) a b => '+ se3.str());
+
+    var e4 = L('(λcab.c a b) (λxy.x) a b');
+    var se4 = e4.solve();
+    print('(λcab.c a b) (λxy.x) a b => '+ se4.str());
+
+    var e5 = L('COND TRUE a b',{
+      'COND':'(λcab.c a b)',
+      'TRUE':'(λxy.x)'
+    });
+    var se5 = e5.solve();
+    print('COND TRUE a b => '+ se5.str());
+
+    var e6 = L('COND FALSE a b',{
+      'COND':'(λcab.c a b)',
+      'FALSE':'(λxy.y)'
+    });
+    var se6 = e6.solve();
+    print('COND FALSE a b => '+ se6.str());
+
+    var e7 = L('INCL 0',{
+      'INCL':'(λnfx.f (n f x))',
+      '0':'(λfx.x)',
+      '1':'(λfx.f x)'
+    });
+    var se7 = e7.solve();
+    print('INCL 0 => ' + se7.str());
+
+    var e8 = L('INCL 1',{
+      'INCL':'(λnfx.f (n f x))',
+      '1':'(λfx.f x)',
+      '2':'(λfx.f (f x))'
+    });
+    var se8 = e8.solve();
+    print('INCL 1 => ' + se8.str());
+
+    var e9 = L('ADD 1 1',{
+      'ADD':'(λmnfx.m f (n f x))',
+      '1':'(λfx.f x)',
+      '2':'(λfx.f (f x))'
+    });
+    var se9 = e9.solve();
+    print('ADD 1 1 => ' + se9.str());
+
+    var e10 = L('ADD 2 3',{
+      'ADD':'(λmnfx.m f (n f x))',
+      '2':'(λfx.f (f x))',
+      '3':'(λfx.f (f (f x)))',
+      '5':'(λfx.f (f (f (f (f x)))))'
+    });
+    var se10 = e10.solve();
+    print('ADD 2 3 => ' + se10.str());
+    &lt;/script>
+    &lt;/head>
+    &lt;body>
+    &lt;/body>
+    &lt;/html>
+    </pre>
+  </div>
+</body>
+</html>

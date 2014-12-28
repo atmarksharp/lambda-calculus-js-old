@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Test</title>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.0.1/sprintf.min.js"></script> -->
+  <!-- <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script> -->
   <script src="lambda.js"></script>
   <script>
 
@@ -42,7 +44,7 @@
     '1':'(λfx.f x)'
   });
   var se7 = e7.solve();
-  console.log('INCL 0 => '+ se7.str() +' ('+se7.real_str()+')');
+  console.log( sprintf('INCL 0 => %s => %s', se7.real_str(), se7.str()) );
 
   var e8 = L('INCL 1',{
     'INCL':'(λnfx.f (n f x))',
@@ -50,7 +52,7 @@
     '2':'(λfx.f (f x))'
   });
   var se8 = e8.solve();
-  console.log('INCL 1 => '+ se8.str() +' ('+se8.real_str()+')');
+  console.log( sprintf('INCL 1 => %s => %s', se8.real_str(), se8.str()) );
 
   var e9 = L('ADD 1 1',{
     'ADD':'(λmnfx.m f (n f x))',
@@ -58,7 +60,7 @@
     '2':'(λfx.f (f x))'
   });
   var se9 = e9.solve();
-  console.log('ADD 1 1 => '+ se9.str() +' ('+se9.real_str()+')');
+  console.log( sprintf('ADD 1 1 => %s => %s', se9.real_str(), se9.str()) );
 
   var e10 = L('ADD 2 3',{
     'ADD':'(λmnfx.m f (n f x))',
@@ -67,7 +69,7 @@
     '5':'(λfx.f (f (f (f (f x)))))'
   });
   var se10 = e10.solve();
-  console.log('ADD 2 3 => '+ se10.str() +' ('+se10.real_str()+')');
+  console.log( sprintf('ADD 2 3 => %s => %s', se10.real_str(), se10.str()) );
 
   </script>
 </head>
