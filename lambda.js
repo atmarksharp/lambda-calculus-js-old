@@ -371,7 +371,7 @@ function yyparse()
       return lambdaStringify(this);
     }
     this.real_str = function(){
-      return '(λ'+this.arg+'.'+this.expr.str()+')';
+      return '(λ'+this.arg+'.'+this.expr.real_str()+')';
     }
     this.simplify = function(){
       return G.lambdaSimplify(this);
@@ -401,7 +401,7 @@ function yyparse()
       return lambdaStringify(this);
     }
     this.real_str = function(){
-      return '('+this.expr1.str()+' '+this.expr2.str()+')';
+      return '('+this.expr1.real_str()+' '+this.expr2.real_str()+')';
     }
     this.removeGensym = function(){
       this.expr1 = this.expr1.removeGensym();
@@ -563,7 +563,7 @@ function yyparse()
     for (var i=0; i<__defineKeys.length; i++) {
       var key = __defineKeys[i];
       var value = __defines[key];
-      if(expr_real_str == value.real_str()){
+      if(expr.constructor.name == value.constructor.name && expr_real_str == value.real_str()){
         return key;
       }
     }
