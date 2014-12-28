@@ -29,6 +29,37 @@
   var se5 = e5.solve();
   console.log('COND TRUE a b => '+ se5.str());
 
+  var e6 = L('COND FALSE a b',{
+    'COND':'(λcab.c a b)',
+    'FALSE':'(λxy.y)'
+  });
+  var se6 = e6.solve();
+  console.log('COND FALSE a b => '+ se6.str());
+
+  var e7 = L('INCL 0',{
+    'INCL':'(λnfx.f (n f x))',
+    '0':'(λfx.x)',
+    '1':'(λfx.f x)'
+  });
+  var se7 = e7.solve();
+  console.log('INCL 0 => '+ se7.str());
+
+  var e8 = L('INCL 1',{
+    'INCL':'(λnfx.f (n f x))',
+    '1':'(λfx.f x)',
+    '2':'(λfx.f (f x))'
+  });
+  var se8 = e8.solve();
+  console.log('INCL 1 => '+ se8.str());
+
+  var e9 = L('ADD 1 1',{
+    'ADD':'(λmnfx.m f (n f x))',
+    '1':'(λfx.f x)',
+    '2':'(λfx.f (f x))'
+  });
+  var se9 = e9.solve();
+  console.log('ADD 1 1 => '+ se9.str());
+
   </script>
 </head>
 <body>
