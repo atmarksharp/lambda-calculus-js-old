@@ -6,7 +6,7 @@ Parser and Solver of Lambda Calculus
 
 ### Preference
 
-- Add &lt;script>path/to/lambda.js</script> into &lt;head>...&lt;/head>
+- Add &lt;script>path/to/lambda&lt;js</script> into &lt;head>...&lt;/head>
 
 ### Basic Usage
 
