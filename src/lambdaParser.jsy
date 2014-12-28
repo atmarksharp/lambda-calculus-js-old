@@ -1,0 +1,323 @@
+%{
+
+%}
+
+%left ' '
+
+%token ID IDENTIFIER
+%token LID IDENTIFIER
+%token PARAMETERS IDENTIFIER
+
+%%
+
+start: line;
+
+line
+  : expr { returnValue = $1; /* expr */ }
+  ;
+
+expr
+  : '(' expr ')' { $$ = $2; /* '(' expr ')' */ }
+  | expr ' ' expr { $$ = $1.addArg($3); /* expr ' ' expr */ }
+  | '#' parameters '.' expr { $$ = lambdaGenerator($2,$4); /* '#' parameters '.' expr */ }
+  | constant { $$ = getDefine($1); /* constant */ }
+  | ID { $$ = new Identifier($1); /* ID */ }
+  ;
+
+parameters
+  : ID parameters { $$ = ($1 + $2); /* ID parameter */ }
+  | ID { $$ = $1; /* ID */ }
+  ;
+
+constant
+  : LID constant { $$ = ($1 + $2); /* LID constant */ }
+  | LID { $$ = $1; /* LID */}
+  ;
+
+%%
+
+// Basic Functions ===================================
+
+function _map(arr, func){
+  var ret = [];
+  for (var i=0; i<arr.length; i++) {
+    ret.push(func(arr[i],i));
+  };
+  return ret;
+}
+
+function _filter(arr, func){
+  var ret = [];
+  for (var i=0; i<arr.length; i++) {
+    if(func(arr[i],i)){
+      ret.push(arr[i]);
+    }
+  };
+  return ret;
+}
+
+// Utility Functions =============================
+
+// Get difinition value (ex: id=TRUE(#xy.x))
+function getDefine(id){
+  var expr = __defines[id];
+  if(expr == null){
+    throw new Error("'" + id + "' is not defined")
+  }else{
+    return expr;
+  }
+}
+
+// Generate lambdas with parameters (#xyz.body)
+function lambdaGenerator(parameterStr, body){
+  var parameters = parameterStr.split('').reverse();
+  var implement = body;
+  var lambda = null;
+  for (var i=0; i<parameters.length; i++) {
+    var p = parameters[i];
+    lambda = new Lambda(p,implement);
+    implement = lambda;
+  };
+  return lambda;
+}
+
+function lambdaStringify(expr){
+  var list = [expr].concat(expr.args);
+
+  listLoop: for (var i = 0; i < list.length; i++) {
+    var arg = list[i];
+    for (var n = 0; n < __defineKeys.length; n++) {
+      var key = __defineKeys[n];
+      var def = __defines[key]
+      if(def.equals(arg)){
+        list[i] = key;
+        continue listLoop;
+      }
+    }
+
+    list[i] = list[i].to_real_str();
+  }
+
+  return list.join(' ');
+}
+
+function lambdaSimplify(expr, not_root){
+  var lambda = expr;
+
+  while(true){
+    if(not_root == null){
+      // console.log(lambda.to_real_str());
+    }
+
+    if(lambda instanceof Identifier){
+      return lambda;
+    }else if(lambda.args.length == 0){
+      return lambda;
+    }else{
+
+      var parameter = lambda.parameter;
+      var child = null;
+
+      if(lambda.body instanceof Lambda){
+        child = new Lambda(lambda.body.parameter, lambda.body.body);
+      }else{
+        child = new Identifier(lambda.body.name);
+      }
+
+      var value = lambda.args[0];
+      child.args = lambda.args.slice(1);
+      child = betaReplace(child, parameter, value);
+
+      if(child.args.length > 0){
+        for (var i = 0; i < child.args.length; i++) {
+          if(child.args[i]  != null){
+            child.args[i] = lambdaSimplify(child.args[i], true);
+          }
+        }
+      }
+
+      lambda = child;
+    }
+  }
+}
+
+function betaReplace(expr, parameter, value){
+
+  if(expr.args.length > 0){
+    for (var i = 0; i < expr.args.length; i++) {
+      if(expr.args[i]  != null){
+        expr.args[i] = betaReplace(expr.args[i], parameter, value);
+      }
+    };
+  }
+
+  if(expr.body != null){
+    expr.body = betaReplace(expr.body, parameter, value);
+  }
+
+  if(expr.name == parameter){
+    var args = expr.args;
+    expr = value;
+    expr.args = args;
+  }
+
+  return expr;
+}
+
+// Tree Classes ============================
+
+function Identifier(_name) {
+  this.name = _name;
+  this.args = [];
+
+  this.equals = function (o) {
+    return this.to_real_str() === o.to_real_str();
+  }
+
+  this.addArg = function(arg){
+    this.args.push(arg);
+    return this;
+  }
+
+  this.to_str = function(){
+    return lambdaStringify(this);
+  }
+
+  this.to_real_str = function(){
+    if(this.args.length == 0){
+      return this.name;
+    }else{
+      return '(' + this.name + ' ' + _map(this.args, function(o){ return o.to_real_str(); }).join(' ') + ')';
+    }
+  }
+
+  this.simplify = function(){
+    return lambdaSimplify(this);
+  }
+}
+
+function Lambda(_parameter, _body){
+  this.parameter = _parameter;
+  this.body = _body;
+  this.args = [];
+
+  this.equals = function (o) {
+    return this.to_real_str() === o.to_real_str();
+  }
+
+  this.addArg = function(arg){
+    this.args.push(arg);
+    return this;
+  }
+
+  this.to_str = function(){
+    return lambdaStringify(this);
+  }
+
+  this.to_real_str = function(){
+    if(this.args.length == 0){
+      return "(λ"+this.parameter+"."+this.body.to_real_str()+")";
+    }else{
+      var lambda = "(λ"+this.parameter+"."+this.body.to_real_str()+")";
+      return '(' + lambda + ' ' + _map(this.args, function(o){ return o.to_real_str(); }).join(' ') + ')';
+    }
+  }
+
+  this.simplify = function(){
+    return lambdaSimplify(this);
+  }
+}
+
+// Parser's fields and functions ==============================
+
+var token;
+var buffer;
+var errorMessage;
+var __defines = {};
+var __defineKeys = [];
+var returnValue = null;
+
+function isID(s){
+  return 'abcdefghijklmnopqrstuvwxyz'.indexOf(s) > -1;
+}
+
+function isLargeID(s){
+  return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789'.indexOf(s) > -1;
+}
+
+function yylex() {
+  yylval = null;
+
+  while(buffer != '' && (buffer.charAt(0) == '\n' || buffer.charAt(0) == '\t')){
+    token = buffer.substr(0, 1);
+    buffer = buffer.substr(1);
+  }
+
+  var c = buffer.charAt(0);
+
+  if(buffer.length == 0){
+    return 0;
+  } else if (isID(c)) {
+    token = c;
+    buffer = buffer.substr(1);
+    yylval = token;
+    return ID;
+  } else if (isLargeID(c)) {
+    token = c;
+    buffer = buffer.substr(1);
+    yylval = token;
+    return LID;
+  } else {
+    token = buffer.substr(0, 1);
+    buffer = buffer.substr(1);
+    return token.charCodeAt(0);
+  }
+}
+
+function yyerror(msg) {
+  throw new Error(msg);
+  // yyprintln(msg);
+}
+
+
+// parseLambda =============================
+
+// str: lambda string
+// defs: definition dictionary (ex: {'TRUE':'(λxy.x)'} )
+
+function parseLambda(str, defs){
+  return __parseLambdaImpl(str, defs, null);
+}
+
+function __parseLambdaImpl(str, _defs, no_reset) {
+  var defs = _defs || {};
+  var keys = [];
+
+  // Resets defines at new parsing
+  if(no_reset == null){
+    __defineKeys = [];
+    __defines = {};
+  }
+
+  // Parse lambdas of defines
+  if(_defs != null){
+    for(var k in defs){ keys.push(k) };
+    for (var i=0; i<keys.length; i++) {
+      var key = keys[i];
+      __defines[key] = __parseLambdaImpl(defs[key], null, 'no-reset');
+    };
+
+    __defineKeys = keys;
+  }
+
+  // Parse
+  buffer = str.replace(/λ/g,'#');
+  yyparse();
+
+  // Returns expr
+  return returnValue;
+}
+
+// Alias
+var L = parseLambda;
+
