@@ -42,7 +42,7 @@
     '1':'(λfx.f x)'
   });
   var se7 = e7.solve();
-  console.log('INCL 0 => '+ se7.str());
+  console.log('INCL 0 => '+ se7.str() +' ('+se7.real_str()+')');
 
   var e8 = L('INCL 1',{
     'INCL':'(λnfx.f (n f x))',
@@ -50,7 +50,7 @@
     '2':'(λfx.f (f x))'
   });
   var se8 = e8.solve();
-  console.log('INCL 1 => '+ se8.str());
+  console.log('INCL 1 => '+ se8.str() +' ('+se8.real_str()+')');
 
   var e9 = L('ADD 1 1',{
     'ADD':'(λmnfx.m f (n f x))',
@@ -58,7 +58,16 @@
     '2':'(λfx.f (f x))'
   });
   var se9 = e9.solve();
-  console.log('ADD 1 1 => '+ se9.str());
+  console.log('ADD 1 1 => '+ se9.str() +' ('+se9.real_str()+')');
+
+  var e10 = L('ADD 2 3',{
+    'ADD':'(λmnfx.m f (n f x))',
+    '2':'(λfx.f (f x))',
+    '3':'(λfx.f (f (f x)))',
+    '5':'(λfx.f (f (f (f (f x)))))'
+  });
+  var se10 = e10.solve();
+  console.log('ADD 2 3 => '+ se10.str() +' ('+se10.real_str()+')');
 
   </script>
 </head>
