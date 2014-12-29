@@ -11,13 +11,13 @@ Parser and Solver of Lambda Calculus
 ### Basic Usage
 
 ```javascript
-var e = L('(λx.x) a');
+var e = lambda('(λx.x) a'); // this is simplest, and easy to understand.
 console.log(e.solve().str()); // a
 
-e = lambda('(λx.x) a');
+e = L('(λx.x) a'); // L() is shorthand for lambda().
 console.log(e.solve().str()); // a
 
-e = L('(#x.x) a'); // '#' means the lambda sign
+e = L('(#x.x) a'); // '#' is alias of 'λ'
 console.log(e.solve().str()); // a
 ```
 
