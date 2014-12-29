@@ -2,6 +2,10 @@
 
 Parser and Solver of Lambda Calculus
 
+## License
+
+MIT License
+
 ## Usage
 
 ### Preference
@@ -37,6 +41,15 @@ console.log('ADD 2 3 => ' + solved.real_str()); // (λfx.f (f (f (f (f x)))))
 console.log('ADD 2 3 => ' + solved.str()); // 5
 ```
 
-## License
+## Build Manually
 
-MIT License
+### Requirements
+
+- rake
+- kmyacc ([Official Website (Japanese)](http://www005.upp.so-net.ne.jp/kmori/kmyacc/), [kmyacc-forked (English)](https://github.com/moriyoshi/kmyacc-forked))
+- java 6 (or higher)
+
+### Build
+
+type `rake` on the root directory.
+
