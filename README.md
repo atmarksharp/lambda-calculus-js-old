@@ -7,6 +7,8 @@ Parser and Solver of Lambda Calculus
 - [lambda.js](https://raw.githubusercontent.com/atmarksharp/lambda-js/master/lambda.js)
 - [lambda.min.js](https://raw.githubusercontent.com/atmarksharp/lambda-js/master/lambda.min.js)
 
+(Right click a link, and click "Save As")
+
 ## License
 
 MIT License
