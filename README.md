@@ -17,7 +17,7 @@ MIT License
 
 #### Preference
 
-- Add &lt;script>path/to/lambda.js&lt;/script> into &lt;head>...&lt;/head>
+- Add **&lt;script>path/to/lambda.js&lt;/script>** into *&lt;head>...&lt;/head>*
 
 #### Basic Usage
 
