@@ -25,10 +25,10 @@ console.log(e.solve().str()); // a
 
 ```javascript
 var e = L('ADD 2 3',{
-  'ADD':'(λmnfx.m f (n f x))', // On current version, '(λmnfx.mf(nfx))' is wrong. sorry :(
-  '2':'(λfx.f (f x))',
-  '3':'(λfx.f (f (f x)))',
-  '5':'(λfx.f (f (f (f (f x)))))'
+  'ADD':'(λmnfx.mf(nfx))',
+  '2':'(λfx.f(fx))',
+  '3':'(λfx.f(f(fx)))',
+  '5':'(λfx.f(f(f(f(fx)))))'
 });
 
 var solved = e.solve();
