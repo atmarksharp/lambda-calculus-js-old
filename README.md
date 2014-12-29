@@ -9,10 +9,6 @@ Parser and Solver of Lambda Calculus
 
 (Right-click a link, and select "Save As")
 
-## License
-
-MIT License
-
 ## Usage
 
 #### Preference
@@ -59,4 +55,8 @@ console.log('ADD 2 3 => ' + solved.str()); // 5
 #### Build
 
 type `rake` on the root directory.
+
+## License
+
+MIT License
 
