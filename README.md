@@ -2,17 +2,22 @@
 
 Parser and Solver of Lambda Calculus
 
+## Downloads
+
+- [lambda.js](https://raw.githubusercontent.com/atmarksharp/lambda-js/master/lambda.js)
+- [lambda.min.js](https://raw.githubusercontent.com/atmarksharp/lambda-js/master/lambda.min.js)
+
 ## License
 
 MIT License
 
 ## Usage
 
-### Preference
+#### Preference
 
 - Add &lt;script>path/to/lambda.js&lt;/script> into &lt;head>...&lt;/head>
 
-### Basic Usage
+#### Basic Usage
 
 ```javascript
 var e = lambda('(λx.x) a'); // this is simplest, and easy to understand.
@@ -25,7 +30,7 @@ e = L('(#x.x) a'); // '#' is alias of 'λ'
 console.log(e.solve().str()); // a
 ```
 
-### Practical Usage
+#### Practical Usage
 
 ```javascript
 var e = L('ADD 2 3',{
@@ -43,13 +48,13 @@ console.log('ADD 2 3 => ' + solved.str()); // 5
 
 ## Build Manually
 
-### Requirements
+#### Requirements
 
 - rake
 - kmyacc ([Official Website (Japanese)](http://www005.upp.so-net.ne.jp/kmori/kmyacc/), [kmyacc-forked (English)](https://github.com/moriyoshi/kmyacc-forked))
 - java 6 (or higher)
 
-### Build
+#### Build
 
 type `rake` on the root directory.
 
