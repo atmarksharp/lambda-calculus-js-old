@@ -653,13 +653,58 @@ function yyparse()
       __defineKeys = keys;
     }
 
+    // Replace Defined Keywords (ex: PLUS, ADD...)
     for (var i=0; i<__defineKeys.length; i++) {
       var key = __defineKeys[i];
       str = str.split(key).join(defs[key]);
     };
 
+
+    // replace λ to #
+    var str = str.split('λ').join('#');
+
+    // add spaces (for yacc's %left limitation)
+
+    str = str.replace(/\)\(/g,') (');
+    str = str.replace(/([a-z])\(/g,'$1 (');
+    str = str.replace(/\)([a-z])/g,') $1');
+
+    var s = '';
+    var flag = '';
+    var c0 = '';
+    for (var i=0; i<str.length; i++) {
+      var c = str[i];
+      if(c == '#'){
+        flag = 'param';
+        c0 = '';
+        s += c;
+      }else if(/[a-z]/.test(c)){
+        if(flag == 'param'){
+          c0 = ''
+          s += c;
+        }else{
+          if(c0 != ''){
+            s = s.slice(0, -1);
+            s += (c0 + ' ')
+          }
+
+          c0 = c;
+          s += c;
+        }
+      }else{
+        flag = '';
+        c0 = '';
+        s += c;
+      }
+    };
+
+    str = s;
+
+    // console.log('fixed: '+str);
+
+
     // Parse
-    buffer = str.split('λ').join('#');
+    buffer = str;
     yyparse();
 
     // Returns expr
