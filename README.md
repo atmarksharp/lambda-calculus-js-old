@@ -1,11 +1,11 @@
-# lambda.js
+# lambda-calculus.js
 
 Parser and Solver of Lambda Calculus
 
 ## Downloads
 
-- [lambda.js](https://raw.githubusercontent.com/atmarksharp/lambda-js/master/lambda.js)
-- [lambda.min.js](https://raw.githubusercontent.com/atmarksharp/lambda-js/master/lambda.min.js)
+- [lambda-calculus.js](https://raw.githubusercontent.com/atmarksharp/lambda-calculus-js/master/lambda-calculus.js)
+- [lambda-calculus.min.js](https://raw.githubusercontent.com/atmarksharp/lambda-calculus-js/master/lambda-calculus.min.js)
 
 (Right-click a link, and select "Save As")
 
