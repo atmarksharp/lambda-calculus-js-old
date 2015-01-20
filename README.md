@@ -1,3 +1,5 @@
+***Moved to [https://github.com/atmarksharp/lambda-calculus-js/](https://github.com/atmarksharp/lambda-calculus-js)***
+
 # lambda-calculus.js
 
 Parser and Solver of Lambda Calculus
